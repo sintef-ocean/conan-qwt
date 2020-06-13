@@ -118,6 +118,24 @@ class QwtConan(ConanFile):
         tools.replace_in_file(
             qwt_build_file_path, "CONFIG           += build_all", "")
 
+        if self.settings.compiler == 'clang':
+            qwt_build = load(qwt_build_file_path)
+            qwt_build += "\nQMAKE_CC=clang-{}"\
+                .format(self.settings.compiler.version)
+            qwt_build += "\nQMAKE_LINK_C=clang-{}"\
+                .format(self.settings.compiler.version)
+            qwt_build += "\nQMAKE_LINK_C_SHLIB=clang-{}"\
+                .format(self.settings.compiler.version)
+            qwt_build += "\nQMAKE_CXX=clang++-{}"\
+                .format(self.settings.compiler.version)
+            qwt_build += "\nQMAKE_LINK=clang++-{}"\
+                .format(self.settings.compiler.version)
+            qwt_build += "\nQMAKE_LINK_SHLIB=clang++-{}"\
+                .format(self.settings.compiler.version)
+            qwt_build =qwt_build.encode("utf-8")
+            with open(qwt_build_file_path, "wb") as handle:
+                handle.write(qwt_build)
+
     def build(self):
 
         src_path = os.path.join(self.source_folder, self.qwt_path)
@@ -143,6 +161,7 @@ class QwtConan(ConanFile):
             self.run("make",
                      cwd=src_path,
                      run_environment=True)
+            #
 
     def package(self):
         self.copy("qwt*.h", dst="include",
