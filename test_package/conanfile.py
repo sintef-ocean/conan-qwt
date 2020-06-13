@@ -1,22 +1,29 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from conans import ConanFile, CMake
 import os
 
+
 class QwtTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    default_options = "Qwt:designer=False"
-    generators = "cmake"
+    default_options = "qwt:designer=False"
+    generators = ("cmake_paths", "cmake_find_package")
 
     def build(self):
         cmake = CMake(self)
-        # Current dir is "test_package/build/<build_id>" and CMakeLists.txt is in "test_package"
-        cmake.configure(source_dir=self.conanfile_directory, build_dir="./")
+        cmake.configure()
         cmake.build()
 
     def imports(self):
-        self.copy("*.dll", dst="bin", src="bin")
-        self.copy("*.dylib*", dst="bin", src="lib")
-        self.copy('*.so*', dst='bin', src='lib')
+        self.copy("*.dll", dst=str(self.settings.build_type), keep_path=False)
 
     def test(self):
-        os.chdir("bin")
-        self.run(".%sexample" % os.sep)
+        program = 'example'
+        if self.settings.os == "Windows":
+            program += '.exe'
+            test_path = os.path.join(str(self.build_folder),
+                                     str(self.settings.build_type))
+        else:
+            test_path = '.' + os.sep
+        self.run(os.path.join(test_path, program + " -platform offscreen"))
