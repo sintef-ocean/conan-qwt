@@ -67,8 +67,6 @@ jobs:
       - name: Conan upload
         run: |
           conan upload --all -c -r sintef ${SINTEF_REFERENCE} --retry 5
-          conan copy --all qt/*@bincrafters/stable sintef/stable
-          conan upload --all -c -r sintef qt* --retry 5 --retry-wait 20
       - name: Bintray info
         run: |
           python3 bintray.py ${SINTEF_CONAN_CLASS} \
