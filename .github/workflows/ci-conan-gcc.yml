@@ -65,7 +65,7 @@ jobs:
             -s compiler.libcxx=${{ matrix.compiler_libcxx }} \
             -o ${SINTEF_LIBNAME}:${{ matrix.option_shared }} \
             -b missing ${extra}\
-            . sintef/testing
+            . sintef/stable
       - name: Conan upload
         run: |
           conan upload --all -c -r sintef ${SINTEF_REFERENCE} --retry 5

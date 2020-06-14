@@ -45,7 +45,7 @@ jobs:
             -s compiler.version=${{ matrix.compiler_version }} `
             -s compiler.toolset=${{ matrix.compiler_toolset }} `
             -o ${env:SINTEF_LIBNAME}:${{ matrix.option_shared }} `
-            -b missing . sintef/testing
+            -b missing . sintef/stable
       - name: Conan upload
         run: |
           conan upload --all -c -r sintef ${env:SINTEF_REFERENCE} --retry 10
