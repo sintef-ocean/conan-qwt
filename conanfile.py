@@ -43,7 +43,7 @@ class QwtConan(ConanFile):
         "svg=True",
         "opengl=True",
         "mathml=False",
-        "designer=True",
+        "designer=False",
         "examples=False",
         "playground=False")
 
@@ -53,7 +53,6 @@ class QwtConan(ConanFile):
 
     def requirements(self):
         self.requires("qt/5.15.0@bincrafters/stable")
-
 
     def build_requirements(self):
         if tools.os_info.is_windows and self.settings.compiler == "Visual Studio":
@@ -139,29 +138,25 @@ class QwtConan(ConanFile):
     def build(self):
 
         src_path = os.path.join(self.source_folder, self.qwt_path)
-        self.run("qmake qwt.pro",
-                 cwd=src_path,
-                 run_environment=True)
 
         if self.settings.os == "Windows":
             if self.settings.compiler == "Visual Studio":
-                env_build = VisualStudioBuildEnvironment(self)
-                with tools.environment_append(env_build.vars):
-                    vcvars = tools.vcvars_command(self)
-                    build_args = []
-                    build_cmd = "jom"
-                    self.run("{} && {} {}".format(vcvars,
-                                                  build_cmd,
-                                                  " ".join(build_args)),
+                with tools.vcvars(self.settings):
+                    self.run("qmake qwt.pro",
+                             cwd=src_path,
+                             run_environment=True)
+                    self.run("jom",
                              cwd=src_path,
                              run_environment=True)
             else:
-                raise ConanException("Not yet implemented for this compiler")
+                raise ConanException("Unsupported settings, recipe not implemented")
         else:
+            self.run("qmake qwt.pro",
+                     cwd=src_path,
+                     run_environment=True)
             self.run("make",
                      cwd=src_path,
                      run_environment=True)
-            #
 
     def package(self):
         self.copy("qwt*.h", dst="include",

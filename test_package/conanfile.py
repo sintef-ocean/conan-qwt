@@ -1,22 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, CMake
+from conans import ConanFile, CMake, tools, RunEnvironment
 import os
 
 
 class QwtTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
-    default_options = "qwt:designer=False"
-    generators = ("cmake_paths", "cmake_find_package")
+    generators = ("qt", "cmake", "cmake_paths", "cmake_find_package")
+    requires = "harfbuzz/[>=2.6.7]@bincrafters/stable"
 
     def build(self):
-        cmake = CMake(self)
-        cmake.configure()
-        cmake.build()
-
-    def imports(self):
-        self.copy("*.dll", dst=str(self.settings.build_type), keep_path=False)
+        env_build = RunEnvironment(self)
+        with tools.environment_append(env_build.vars):
+            cmake = CMake(self, set_cmake_flags=True)
+            cmake.configure()
+            cmake.build()
 
     def test(self):
         program = 'example'
@@ -26,4 +25,5 @@ class QwtTestConan(ConanFile):
                                      str(self.settings.build_type))
         else:
             test_path = '.' + os.sep
-        self.run(os.path.join(test_path, program + " -platform offscreen"))
+        self.run(os.path.join(test_path, program + " -platform offscreen"),
+                 run_environment=True)
