@@ -4,6 +4,7 @@ from conans.util.files import load
 from conans.errors import ConanException
 import os
 import sys
+import shutil
 
 
 class QwtConan(ConanFile):
@@ -103,22 +104,36 @@ class QwtConan(ConanFile):
         with open(qwt_config_file_path, "wb") as handle:
             handle.write(qwt_config)
 
+        qwt_build_path = os.path.join(self.source_folder,
+                                      self.qwt_path)
+
+        os.rename(os.path.join(qwt_build_path, 'qwtbuild.pri'),
+                  os.path.join(qwt_build_path, 'qwtbuild.tmpl'))
+
+    def build(self):
+
         qwt_build_string = "CONFIG += {}"\
             .format(("release" if self.settings.build_type == "Release" else "debug"))
         qwt_build_file_path = os.path.join(self.source_folder,
                                            self.qwt_path,
-                                           "qwtbuild.pri")
+                                           'qwtbuild.{}')
+        shutil.copy(qwt_build_file_path.format('tmpl'),
+                    qwt_build_file_path.format('pri'))
+
         tools.replace_in_file(
-            qwt_build_file_path, "CONFIG           += release",
+            qwt_build_file_path.format('pri'),
+            "CONFIG           += release",
             qwt_build_string)
         tools.replace_in_file(
-            qwt_build_file_path, "CONFIG           += debug_and_release",
+            qwt_build_file_path.format('pri'),
+            "CONFIG           += debug_and_release",
             qwt_build_string)
         tools.replace_in_file(
-            qwt_build_file_path, "CONFIG           += build_all", "")
+            qwt_build_file_path.format('pri'),
+            "CONFIG           += build_all", "")
 
         if self.settings.compiler == 'clang':
-            qwt_build = load(qwt_build_file_path)
+            qwt_build = load(qwt_build_file_path.format('pri'))
             qwt_build += "\nQMAKE_CC=clang-{}"\
                 .format(self.settings.compiler.version)
             qwt_build += "\nQMAKE_LINK_C=clang-{}"\
@@ -131,11 +146,9 @@ class QwtConan(ConanFile):
                 .format(self.settings.compiler.version)
             qwt_build += "\nQMAKE_LINK_SHLIB=clang++-{}"\
                 .format(self.settings.compiler.version)
-            qwt_build =qwt_build.encode("utf-8")
-            with open(qwt_build_file_path, "wb") as handle:
+            qwt_build = qwt_build.encode("utf-8")
+            with open(qwt_build_file_path.format('pri'), "wb") as handle:
                 handle.write(qwt_build)
-
-    def build(self):
 
         src_path = os.path.join(self.source_folder, self.qwt_path)
 
@@ -162,7 +175,8 @@ class QwtConan(ConanFile):
         self.copy("qwt*.h", dst="include",
                   src=os.path.join("qwt-{}".format(self.version),
                                    "src"))
-        self.copy("*qwt.lib", dst="lib", keep_path=False)
+        self.copy("*.lib", dst="lib", keep_path=False)
+        self.copy("*.pdb", dst="lib", keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
         self.copy("*.so*", dst="lib", keep_path=False)
         self.copy("*.a", dst="lib", keep_path=False)
@@ -172,4 +186,7 @@ class QwtConan(ConanFile):
     def package_info(self):
 
         self.cpp_info.libs = ["qwt"]
+        if self.settings.build_type == "Debug"\
+           and self.settings.compiler == "Visual Studio":
+            self.cpp_info.libs[0] += 'd'
         self.cpp_info.name = 'Qwt'
