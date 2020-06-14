@@ -33,6 +33,7 @@ The package is usually consumed using the `conan install` command or a *conanfil
    licenses, * -> ./licenses @ folder=True
 
    [generators]
+   cmake
    cmake_paths
    cmake_find_package
    ```
@@ -42,11 +43,16 @@ The package is usually consumed using the `conan install` command or a *conanfil
    cmake_minimum_required(VERSION 3.13)
    project(TheProject CXX)
 
+   find_package(harfbuzz MODULE REQUIRED) # Needed for now
    include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
+   include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+   conan_set_vs_runtime()
+
+   find_package(Qt5 COMPONENTS Widgets REQUIRED)
    find_package(Qwt MODULE REQUIRED)
 
    add_executable(the_executor code.cpp)
-   target_link_libraries(the_executor Qwt::Qwt)
+   target_link_libraries(the_executor Qwt::Qwt Qt5::Widgets)
    ```
    Then, do
    ```bash
@@ -60,7 +66,16 @@ The package is usually consumed using the `conan install` command or a *conanfil
 
 Option | Default | Domain
 ---|---|---
+shared | True | [True, False]
+plot | True | [True, False]
+widgets | True | [True, False]
+svg | True | [True, False]
+opengl | True | [True, False]
+mathml | False | [True, False]
+designer | False | [True, False]
+examples | False | [True, False]
+playground | False | [True, False]
 
 ## Known recipe issues
 
-(Add known issues/shortcomings here)
+**Note:** Not all package options have been tested and may not work.
