@@ -59,7 +59,7 @@ jobs:
             -s compiler.version=${{ matrix.compiler_version }} \
             -s compiler.libcxx=libstdc++11 \
             -o ${SINTEF_LIBNAME}:${{ matrix.option_shared }} \
-            -b missing ${extra}\
+            -b missing -b outdated ${extra}\
             . sintef/stable
       - name: Conan upload
         run: |
