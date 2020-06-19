@@ -14,7 +14,7 @@ class QwtConan(ConanFile):
     # Qwt License, Version 1.0
     opt_license ="LGPL-3.0"
     url = "https://github.com/sintef-ocean/conan-qwt"
-    author = "Joakim Haugen (joakim.haugen@gmail.com)"
+    author = "SINTEF Ocean"
     homepage = "https://qwt.sourceforge.io"
     description = \
         "The Qwt library contains GUI Components and utility classes which are "\
