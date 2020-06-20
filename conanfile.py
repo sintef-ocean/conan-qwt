@@ -53,7 +53,11 @@ class QwtConan(ConanFile):
     qwt_path = "qwt-{}".format(version)
 
     def requirements(self):
-        self.requires("qt/5.15.0@bincrafters/stable")
+
+        if self.compiler.version == "6" and self.compiler == "gcc":
+            self.requires("qt/5.12.8@bincrafters/stable")
+        else:
+            self.requires("qt/5.15.0@bincrafters/stable")
 
     def build_requirements(self):
         if tools.os_info.is_windows and self.settings.compiler == "Visual Studio":
