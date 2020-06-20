@@ -54,7 +54,7 @@ class QwtConan(ConanFile):
 
     def requirements(self):
 
-        if self.compiler.version == "6" and self.compiler == "gcc":
+        if self.settings.compiler.version == "6" and self.settings.compiler == "gcc":
             self.requires("qt/5.12.8@bincrafters/stable")
         else:
             self.requires("qt/5.15.0@bincrafters/stable")
