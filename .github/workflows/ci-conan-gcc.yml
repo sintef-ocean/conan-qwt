@@ -63,12 +63,14 @@ jobs:
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
       - name: Conan create
         run: |
-          if [ "${{ matrix.build_type }}" == "Debug" ]; then export extra="--build qt/5.15.0*"; fi
+          if [ ${{ matrix.compiler_version }} -eq 6 ]; then
+              export EXTRA="-b libx11 -b expat"
+          fi
           conan create -s build_type=${{ matrix.build_type }} \
             -s compiler.version=${{ matrix.compiler_version }} \
             -s compiler.libcxx=libstdc++11 \
             -o ${SINTEF_LIBNAME}:${{ matrix.option_shared }} \
-            -b missing -b outdated ${extra}\
+            -b missing -b outdated ${EXTRA}\
             . sintef/stable
       - name: Conan upload
         run: |
