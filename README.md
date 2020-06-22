@@ -79,3 +79,6 @@ playground | False | [True, False]
 ## Known recipe issues
 
 **Note:** Not all package options have been tested and may not work.
+
+**Note:** Clang 8 and 9 are built using ubuntu 20.04 due to some transitive dependencies
+being built with glibc 2.28.

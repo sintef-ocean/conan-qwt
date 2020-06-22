@@ -26,7 +26,14 @@ jobs:
         compiler_version: [8, 9, 10]
         build_type: [Debug, Release]
         option_shared: [shared=True, shared=False]
-        os: [ubuntu-18.04]
+        os: [ubuntu-18.04, ubuntu-20.04]
+        exclude:
+          - os: ubuntu-20.04
+            compiler_version: 10
+          - os: ubuntu-18.04
+            compiler_version: 8
+          - os: ubuntu-18.04
+            compiler_version: 9
     steps:
       - uses: actions/checkout@v2
       - name: Install prerequisites
