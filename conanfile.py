@@ -1,9 +1,7 @@
 from conans import ConanFile, tools
-from conans import VisualStudioBuildEnvironment, AutoToolsBuildEnvironment
 from conans.util.files import load
 from conans.errors import ConanException
 import os
-import sys
 import shutil
 
 
@@ -12,7 +10,7 @@ class QwtConan(ConanFile):
     version = "6.1.5"
     license = "LGPL-3.0 with exceptions, http://qwt.sourceforge.net/qwtlicense.html"
     # Qwt License, Version 1.0
-    opt_license ="LGPL-3.0"
+    opt_license = "LGPL-3.0"
     url = "https://github.com/sintef-ocean/conan-qwt"
     author = "SINTEF Ocean"
     homepage = "https://qwt.sourceforge.io"
@@ -54,13 +52,15 @@ class QwtConan(ConanFile):
 
     def requirements(self):
 
-        if self.settings.compiler == "gcc" and self.settings.compiler.version == "6":
+        if self.settings.compiler == "gcc" \
+           and self.settings.compiler.version == "6":
             self.requires("qt/5.12.8@bincrafters/stable")
         else:
             self.requires("qt/5.15.0@bincrafters/stable")
 
     def build_requirements(self):
-        if tools.os_info.is_windows and self.settings.compiler == "Visual Studio":
+        if tools.os_info.is_windows \
+           and self.settings.compiler == "Visual Studio":
             self.build_requires("jom/1.1.3")
 
     def configure(self):
@@ -69,7 +69,8 @@ class QwtConan(ConanFile):
 
     def source(self):
 
-        url_base = "https://sourceforge.net/projects/qwt/files/qwt/{ver}/qwt-{ver}"\
+        url_base = \
+            "https://sourceforge.net/projects/qwt/files/qwt/{ver}/qwt-{ver}"\
             .format(ver=self.version)
         if self.settings.os != "Windows":
             url = "{}{}".format(url_base, ".tar.bz2")
@@ -117,7 +118,8 @@ class QwtConan(ConanFile):
     def build(self):
 
         qwt_build_string = "CONFIG += {}"\
-            .format(("release" if self.settings.build_type == "Release" else "debug"))
+            .format(("release" if self.settings.build_type == "Release"
+                     else "debug"))
         qwt_build_file_path = os.path.join(self.source_folder,
                                            self.qwt_path,
                                            'qwtbuild.{}')
@@ -166,7 +168,7 @@ class QwtConan(ConanFile):
                              cwd=src_path,
                              run_environment=True)
             else:
-                raise ConanException("Unsupported settings, recipe not implemented")
+                raise ConanException("Recipe not implemented for this setting")
         else:
             self.run("qmake qwt.pro",
                      cwd=src_path,
