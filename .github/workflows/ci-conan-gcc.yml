@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler_version: [6, 7, 8, 9]
+        compiler_version: [63, 7, 8, 9]
         build_type: [Debug, Release]
         option_shared: [shared=True, shared=False]
         os: [ubuntu-20.04]
@@ -42,11 +42,10 @@ jobs:
       - name: Conan create
         run: |
           if [ "${{ matrix.build_type }}" == "Debug" ]; then export extra="--build qt/5.1*"; fi
-          if [ ${{ matrix.compiler_version }} -eq 6 ]; then
+          if [ ${{ matrix.compiler_version }} -eq 63 ]; then
               export EXTRA="-b libx11 -b expat"
           fi
           conan create -s build_type=${{ matrix.build_type }} \
-            -s compiler.version=${{ matrix.compiler_version }} \
             -s compiler.libcxx=libstdc++11 \
             -o ${SINTEF_LIBNAME}:${{ matrix.option_shared }} \
             -b missing -b outdated ${EXTRA}\
