@@ -39,7 +39,7 @@ class QwtConan(ConanFile):
         "shared=True",
         "plot=True",
         "widgets=True",
-        "svg=True",
+        "svg=False",
         "opengl=True",
         "mathml=False",
         "designer=False",
