@@ -56,7 +56,7 @@ class QwtConan(ConanFile):
            and self.settings.compiler.version == "6":
             self.requires("qt/5.12.8@bincrafters/stable")
         else:
-            self.requires("qt/5.15.0@bincrafters/stable")
+            self.requires("qt/5.15.1@bincrafters/stable")
 
     def build_requirements(self):
         if tools.os_info.is_windows \
